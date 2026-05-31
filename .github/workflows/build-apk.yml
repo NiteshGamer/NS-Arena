@@ -1,0 +1,82 @@
+name: Build NS Arena APK
+
+on:
+  push:
+    branches: [main, master]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Install Capacitor dependencies
+        run: npm install
+
+      - name: Bundle socket.io client
+        run: |
+          mkdir -p client/socket.io
+          npm install socket.io-client@4.8.1
+          cp node_modules/socket.io-client/dist/socket.io.esm.min.js client/socket.io/
+          echo "socket.io bundled: $(wc -c < client/socket.io/socket.io.esm.min.js) bytes"
+
+      - name: Bundle Three.js
+        run: |
+          mkdir -p client/three
+          npm install three@0.160.0
+          cp node_modules/three/build/three.module.min.js client/three/
+          echo "Three.js bundled: $(wc -c < client/three/three.module.min.js) bytes"
+
+      - name: Add Android platform
+        run: npx cap add android
+
+      - name: Sync web assets
+        run: npx cap sync android
+
+      - name: Inject NS Arena icons
+        run: |
+          pip install Pillow -q
+          python3 android-config/inject_icons.py
+
+      - name: Force landscape orientation
+        run: python3 android-config/patch_manifest.py
+
+      - name: Configure immersive fullscreen
+        run: |
+          MAIN=$(find android/app/src/main/java -name "MainActivity.java" | head -1)
+          cp android-config/MainActivity.java "$MAIN"
+          echo "MainActivity configured"
+
+      - name: Make Gradle executable
+        run: chmod +x android/gradlew
+
+      - name: Build debug APK
+        run: cd android && ./gradlew assembleDebug --no-daemon
+        env:
+          ANDROID_SDK_ROOT: /usr/local/lib/android/sdk
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: NS-Arena-BETA-1.2.1-3D
+          path: android/app/build/outputs/apk/debug/app-debug.apk
+          retention-days: 30
+
+      - name: Result
+        run: |
+          APK="android/app/build/outputs/apk/debug/app-debug.apk"
+          [ -f "$APK" ] && echo "✅ APK ready! $(du -sh $APK | cut -f1)" || (echo "❌ Build failed" && exit 1)

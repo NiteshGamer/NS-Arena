@@ -1,0 +1,16 @@
+{
+  "appId": "com.nsarena.game",
+  "appName": "NS Arena",
+  "webDir": "client",
+  "android": {
+    "allowMixedContent": true,
+    "backgroundColor": "#05060a"
+  },
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 0,
+      "launchAutoHide": true,
+      "backgroundColor": "#05060a"
+    }
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "name": "ns-arena-server",
+  "version": "BETA 1.2.1",
+  "description": "NS Arena multiplayer backend",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.21.2",
+    "socket.io": "^4.8.1"
+  }
+}

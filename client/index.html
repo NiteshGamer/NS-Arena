@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#05060a" />
+  <title>NS Arena</title>
+  <link rel="stylesheet" href="./css/style.css" />
+  <link rel="manifest" href="/manifest.json" />
+  <link rel="apple-touch-icon" sizes="192x192" href="/assets/icon-192.png" />
+  <link rel="apple-touch-icon" sizes="512x512" href="/assets/icon-512.png" />
+</head>
+<body>
+  <div class="ambient-grid"></div>
+  <div class="ambient-fog"></div>
+
+
+  <!-- Boot Screen -->
+  <section id="boot-screen" class="screen active">
+    <div class="panel boot-panel">
+      <div class="brand">
+        <div class="brand-title glitch" data-text="NS SYSTEMS">NS SYSTEMS</div>
+        <div class="brand-subtitle">Lead Developer: Nitesh Dalal</div>
+        <div class="brand-subtitle">Co-Developer: Shankar Thakur</div>
+      </div>
+      <div class="terminal" id="bootTerminal"></div>
+      <div class="progress-wrap">
+        <div class="progress-label">
+          <span id="bootStatus">Booting core systems</span>
+          <span id="bootPct">0%</span>
+        </div>
+        <div class="progress-bar"><div id="bootBar" class="progress-bar-fill"></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Main Menu -->
+  <section id="main-menu" class="screen hidden">
+    <div class="panel menu-panel">
+      <div class="brand small">
+        <div class="brand-title glitch" data-text="NS ARENA">NS ARENA</div>
+        <div class="brand-subtitle">NS ARENA BETA-1.3.0</div>
+      </div>
+      <label class="field" style="margin-bottom:18px">
+        <span>Username</span>
+        <input id="usernameInput" type="text" maxlength="18" placeholder="Enter username" autocomplete="off" />
+      </label>
+      <div class="menu-btns">
+        <button id="btnSP" class="btn primary wide menu-btn">
+          <span class="menu-btn-icon">⚔</span>
+          <span class="menu-btn-label">Single Player</span>
+          <span class="menu-btn-sub">Fight against bots</span>
+        </button>
+        <button id="btnMP" class="btn secondary wide menu-btn">
+          <span class="menu-btn-icon">🌐</span>
+          <span class="menu-btn-label">Multiplayer</span>
+          <span class="menu-btn-sub">Play with others online</span>
+        </button>
+      </div>
+      <div class="hint">WASD / joystick move · Aim drag · ATK button attack · Space dash</div>
+    </div>
+  </section>
+
+  <!-- Multiplayer Menu -->
+  <section id="mp-menu" class="screen hidden">
+    <div class="panel menu-panel">
+      <div class="brand small">
+        <div class="brand-title glitch" data-text="MULTIPLAYER">MULTIPLAYER</div>
+        <div class="brand-subtitle">Choose how to play online</div>
+      </div>
+      <div class="menu-btns">
+        <button id="btnOnline" class="btn primary wide menu-btn">
+          <span class="menu-btn-icon">🌍</span>
+          <span class="menu-btn-label">Play Online</span>
+          <span class="menu-btn-sub">Join the global arena — fight everyone</span>
+        </button>
+        <button id="btnCreate" class="btn secondary wide menu-btn">
+          <span class="menu-btn-icon">➕</span>
+          <span class="menu-btn-label">Create Team</span>
+          <span class="menu-btn-sub">Get a code and invite friends</span>
+        </button>
+        <button id="btnJoin" class="btn secondary wide menu-btn">
+          <span class="menu-btn-icon">🔗</span>
+          <span class="menu-btn-label">Join Team</span>
+          <span class="menu-btn-sub">Enter a code to join friends</span>
+        </button>
+      </div>
+      <button id="btnMpBack" class="btn ghost wide" style="margin-top:10px">← Back</button>
+    </div>
+  </section>
+
+  <!-- Create Team Screen -->
+  <section id="create-screen" class="screen hidden">
+    <div class="panel menu-panel" style="text-align:center">
+      <div class="brand small">
+        <div class="brand-title glitch" data-text="CREATE TEAM">CREATE TEAM</div>
+        <div class="brand-subtitle">Share this code with your friends</div>
+      </div>
+      <div class="room-code-box">
+        <div class="room-code-label">ROOM CODE</div>
+        <div id="roomCodeDisplay" class="room-code">------</div>
+        <button id="btnCopyCode" class="btn ghost" style="margin-top:8px;font-size:.8rem">Copy Code</button>
+      </div>
+      <div class="hint" style="margin:14px 0">Waiting for friends to join…<br>You can start anytime.</div>
+      <div class="menu-btns" style="flex-direction:row;gap:10px">
+        <button id="btnStartTeam" class="btn primary" style="flex:1">Start Game</button>
+        <button id="btnCreateBack" class="btn ghost" style="flex:1">← Back</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Join Team Screen -->
+  <section id="join-screen" class="screen hidden">
+    <div class="panel menu-panel" style="text-align:center">
+      <div class="brand small">
+        <div class="brand-title glitch" data-text="JOIN TEAM">JOIN TEAM</div>
+        <div class="brand-subtitle">Enter the code from your team leader</div>
+      </div>
+      <label class="field" style="margin:18px 0">
+        <span>Room Code</span>
+        <input id="joinCodeInput" type="text" maxlength="6"
+          placeholder="XXXXXX" autocomplete="off"
+          style="text-transform:uppercase;letter-spacing:.3em;font-size:1.4rem;text-align:center" />
+      </label>
+      <div id="joinError" class="hint" style="color:var(--danger);min-height:20px"></div>
+      <div class="menu-btns" style="flex-direction:row;gap:10px;margin-top:10px">
+        <button id="btnJoinConfirm" class="btn primary" style="flex:1">Join</button>
+        <button id="btnJoinBack" class="btn ghost" style="flex:1">← Back</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Game Shell -->
+  <div id="game-shell" class="hidden">
+    <canvas id="gameCanvas"></canvas>
+    <canvas id="hudCanvas" style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:5"></canvas>
+
+    <div class="hud">
+      <div class="hud-top-left panel mini">
+        <div class="hud-row"><span>HP</span><div class="bar"><div id="hpFill" class="bar-fill hp"></div></div><span id="hpText">100</span></div>
+        <div class="hud-row"><span>STA</span><div class="bar"><div id="staminaFill" class="bar-fill stamina"></div></div><span id="staminaText">100</span></div>
+        <div class="hud-meta">
+          <span>Kills: <b id="killsText">0</b></span>
+          <span>Deaths: <b id="deathsText">0</b></span>
+        </div>
+      </div>
+
+      <div class="hud-top-center panel mini">
+        <div id="roomLabel">Room: arena</div>
+        <div class="hud-meta">
+          <span>FPS: <b id="fpsText">0</b></span>
+          <span>Ping: <b id="pingText">—</b></span>
+          <span>Players: <b id="playersText">0</b></span>
+        </div>
+      </div>
+
+      <div class="hud-top-right panel mini actions">
+        <button id="settingsBtn" class="btn tiny">Settings</button>
+        <button id="fullscreenBtn" class="btn tiny">⛶</button>
+      </div>
+    </div>
+
+    <aside id="leaderboard" class="panel leaderboard">
+      <div class="panel-title">Leaderboard</div>
+      <div id="leaderboardList" class="leaderboard-list"></div>
+    </aside>
+
+    <div id="killFeed" class="kill-feed"></div>
+    <div id="notifications" class="notifications"></div>
+
+    <div id="settingsModal" class="modal hidden">
+      <div class="panel modal-panel">
+        <div class="panel-title">Settings</div>
+        <div class="settings-grid">
+          <div class="settings-item"><span>Sound</span><span class="muted">Audio cues enabled</span></div>
+          <div class="settings-item"><span>Graphics</span><span class="muted">Optimised for mobile</span></div>
+        </div>
+        <div style="margin-top:14px">
+          <label class="field">
+            <span style="font-size:.82rem;color:var(--muted)">Server URL <span style="color:var(--cyan)">(Multiplayer)</span></span>
+            <input id="serverUrlInput" type="url"
+              placeholder="http://YOUR-NGROK-URL or http://192.168.x.x:3000"
+              autocomplete="off"
+              style="font-size:.82rem" />
+          </label>
+          <button id="btnSaveUrl" class="btn primary wide" style="margin-top:6px;font-size:.82rem">Save Server URL</button>
+          <div id="urlStatus" style="font-size:.75rem;color:var(--muted);margin-top:4px;text-align:center"></div>
+        </div>
+        <button id="btnLeave" class="btn danger wide" style="margin-top:10px">Leave Game</button>
+        <button id="closeSettingsBtn" class="btn primary wide" style="margin-top:8px">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="./js/main.js"></script>
+  <script>
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("/sw.js").catch(() => {});
+    }
+  </script>
+</body>
+</html>
